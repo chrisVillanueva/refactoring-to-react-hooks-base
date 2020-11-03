@@ -1,19 +1,17 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-const SelectElement = () => {
+const SelectElement = ({value, handleChange, options}) => {
   return (
     <React.Fragment>
-      <select value={'1'} onChange={ ()=>{} }>
-        <option value="grapefruit">Grapefruit</option>
-        <option value="lime">Lime</option>
-        <option value="coconut">Coconut</option>
-        <option value="mango">Mango</option>
+      <select value={value} onChange={ handleChange }>
+      {options.map(
+        o => <option key={o.key} value={o.label.toLowerCase()}>{o.label}</option>
+      )}
       </select>
     </React.Fragment>
   );
 };
-
 
 SelectElement.propTypes = {
   value: PropTypes.string.isRequired,
