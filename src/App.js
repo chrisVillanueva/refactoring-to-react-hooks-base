@@ -1,8 +1,6 @@
 import React from "react";
-import DashboardShell from "./features/Dashboard/DashboardShell";
+import FirstContainer from "./deliverables/01/FirstContainer";
 
-const App = () => {
-  return <DashboardShell />;
-};
+const App = () => <FirstContainer />;
 
 export default App;
