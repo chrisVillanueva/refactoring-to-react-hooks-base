@@ -1,37 +1,57 @@
-import React, {useState, useEffect} from 'react';
-import SelectElement from './SelectElement';
-import useFetch from './useFetch';
+import React, {useState } from 'react';
+import Select from './../../common/components/Select';
+import DataFetching from './../../common/components/DataFetching';
 
-const selectOptions = [
-  { key: 'fec9a652-1dd4-11eb-adc1-0242ac120002', label: 'Sales' },
-  { key: '092e6521-d71c-4d44-9c08-21a2ec987c9c', label: 'Subscriptions' }
+if (process.env.NODE_ENV === "development") {
+  const { Server } = require("miragejs");
+  const { sales, subscriptions } = require("../../mocks");
+
+  new Server({
+    routes() {
+      this.namespace = process.env.REACT_APP_BASE_URL;
+      this.get("sales/", () => sales);
+      this.get("subscriptions/", () => subscriptions);
+    }
+  });
+}
+
+const optionsForSelect = [
+  { 
+    label: "Sales", 
+    value: `${process.env.REACT_APP_BASE_URL}/sales/` 
+  },
+  {
+    label: "Subscriptions",
+    value: `${process.env.REACT_APP_BASE_URL}/subscriptions/`
+  }
 ];
 
 const FirstContainer = () => {
-  const [currentSelection, setCurrentSelection] = useState('');
-  const {status, mockData} = useFetch(currentSelection);
-  const fetchStatus = (status.id === 1) ? status.type : '';
-  let dataList = (mockData.length > 0) 
-      ? mockData.map( (d, i) => <li key={i}> {d.timestamp} - {d.amount}</li>)
-       : ''; 
-  const handleSelectChange = (e) => {
-    setCurrentSelection(e.target.value);
-    dataList = '';
-  };
+  const [selectedEndpoint, setSelectedEndpoint] = useState("");
+  const [dataLimit, setDataLimit] = useState('5');
+
+  function handleSelectChange(e) {
+    setSelectedEndpoint(e.target.value);
+  }
+
+  function handleLimitChange(e) {
+    setDataLimit(e.target.value);
+  }
+
   return (
     <div>
-      <h1>Sales &amp; Subscriptions Data</h1>
-      { fetchStatus}
-      <SelectElement 
-        value={currentSelection} 
-        handleChange={handleSelectChange} 
-        options={selectOptions} 
+      <Select
+        id="select-data"
+        label="Select the required data to view:" 
+        handleChange={handleSelectChange}
+        options={optionsForSelect}
+      />
+      <label>Result Limit:</label>
+      <input type="text" value={dataLimit}  onChange={handleLimitChange}/>
+      <DataFetching 
+        endpoint={selectedEndpoint} 
+        limit={dataLimit}
         />
-        { dataList && (
-          <ul>
-            {dataList}
-          </ul>
-        )}
     </div>
   );
 };
